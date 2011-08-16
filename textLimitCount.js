@@ -1,32 +1,30 @@
 function textLimiter (elem,options) {
-    return this.each(function() {
-	var $this = elem;
-	options = jQuery.extend(
-	    {
-		'maxLength': signature_max_length,
-		'align': 'right',
-		'valign': 'bottom',
-		'show': 'auto',
-		'elCount': 'auto'
-	    }, 
-	    options
-	);
+    var $this = elem;
+    options = jQuery.extend(
+	{
+	    'maxLength': signature_max_length,
+	    'align': 'right',
+	    'valign': 'bottom',
+	    'show': 'auto',
+	    'elCount': 'auto'
+	}, 
+	options
+    );
 
-	$this.attr('maxLength', options['maxLength']);
+    $this.attr('maxLength', options['maxLength']);
 
-	$this.keyup(function () { 
-	    processTextAreaText($this); 
-	});
-	$this.keydown(function () { 
-	    processTextAreaText($this); 
-	});
-	$this.change(function () { 
-	    processTextAreaText($this); 
-	});
-
-	$this.attr('divName', options['elCount']);
+    $this.keyup(function () { 
 	processTextAreaText($this); 
     });
+    $this.keydown(function () { 
+	processTextAreaText($this); 
+    });
+    $this.change(function () { 
+	processTextAreaText($this); 
+    });
+
+    $this.attr('divName', options['elCount']);
+    processTextAreaText($this); 
 }
 
 function processTextAreaText($obj) {
