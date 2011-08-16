@@ -70,13 +70,13 @@
 			$ok = null;
 			
 			if (qa_clicked('signature_save')) {
-				if(qa_post_text('signature_text') > qa_opt('signatures_length')) {
+				if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {
 					$error = 'Max possible signature length is 1000 characters';
 				}
 				else {
 					qa_db_query_sub(
-						'INSERT INTO ^usersignatures (userid,signature) VALUES (#,$) ON DUPLICATE KEY UPDATE ^usersignatures SET signature=$ WHERE userid=#',
-						$userid,qa_post_text('signature_text'),qa_post_text('signature_text'),$userid
+						'INSERT INTO ^usersignatures (userid,signature) VALUES (#,$) ON DUPLICATE KEY UPDATE signature=$',
+						$userid,qa_post_text('signature_text'),qa_post_text('signature_text')
 					);
 					$ok = 'Signature Saved.';
 				}
@@ -96,7 +96,7 @@
 						'label' => 'Signature',
 						'tags' => 'NAME="signature_text"',
 						'rows' => 8,
-						'value' => @$result['signature'],
+						'value' => @$result,
 						'type' => 'textarea',
 				);
 				$buttons[] = array(
@@ -105,9 +105,12 @@
 				);
 
 				return array(
-					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
 					
-					'title' => 'Signature',
+					'title' => '<a name="signature_text">Signature</a>',
+
+					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
+
+					'style' => 'tall',
 					
 					'ok' => ($ok && !isset($error)) ? $ok : null,
 
