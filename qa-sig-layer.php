@@ -212,7 +212,7 @@
 				));
 
 				$fields[] = array(
-						'label' => "<div class='user-signature'>$signature</div>",
+						'label' => qa_opt('signatures_header').$signature.qa_opt('signatures_footer'),
 						'type' => 'static',
 				);
 				return array(
