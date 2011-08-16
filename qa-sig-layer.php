@@ -70,7 +70,25 @@
 				);
 				
 				foreach($result as $user) {
-					$this->signatures[$user['userid']] = $user['signature'];
+					if (!empty($user['signature'])) {
+						
+						$formats = qa_list_modules('editor');
+						$editorname = $formats[qa_opt('signatures_format')];
+						$editor=qa_load_module('editor', $editorname);
+						$readdata=$editor->read_post();
+						$informat=$readdata['format'];					
+						
+						$viewer=qa_load_viewer($user['signature'], $informat);
+						
+						global $options;
+						
+						$signature=$viewer->get_html($user['signature'], $informat, array(
+							'blockwordspreg' => @$options['blockwordspreg'],
+							'showurllinks' => @$options['showurllinks'],
+							'linksnewwindow' => @$options['linksnewwindow'],
+						));
+					}
+					$this->signatures[$user['userid']] = $signature;
 				}
 				
 				if(isset($this->signatures[$q_view['raw']['userid']])) $q_view['content'].=qa_opt('signatures_header').$this->signatures[$q_view['raw']['userid']].qa_opt('signatures_footer');
@@ -109,8 +127,14 @@
 			if(!$userid) return;
 
 			$ok = null;
-
-			$editorname = qa_opt('signatures_format');
+			
+			$formats = qa_list_modules('editor');
+			
+			foreach ($formats as $key => $format) 
+				if(!strlen($format)) 
+					$formats[$key] = qa_lang_html('admin/basic_editor');
+			
+			$editorname = $formats[qa_opt('signatures_format')];
 			$editor=qa_load_module('editor', $editorname);
 			$readdata=$editor->read_post('signature_text');
 			$informat=$readdata['format'];
@@ -146,13 +170,16 @@
 			if(qa_get_logged_in_handle() == $handle) {
 				
 				$form=array(
+				
+					'ok' => ($ok && !isset($error)) ? $ok : null,
+					
 					'style' => 'tall',
 					
+					'title' => '<a name="signature_text">Signature</a>',
+
+					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
+					
 					'fields' => array(
-						'title' => array(
-							'label' => 'Signature',
-							'tags' => 'NAME="signature_title"',
-						),
 						
 						'content' => $editor->get_field($this->content, $content, $informat, 'signature_text', 12, true)
 						
