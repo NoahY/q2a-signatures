@@ -199,9 +199,20 @@
 				);
 				return $form;
 			}
-			else {
+			else if($content && qa_opt('signatures_profile_enable')) {
+				
+				$viewer=qa_load_viewer($content, $informat);
+				
+				global $options;
+				
+				$signature=$viewer->get_html($content, $informat, array(
+					'blockwordspreg' => @$options['blockwordspreg'],
+					'showurllinks' => @$options['showurllinks'],
+					'linksnewwindow' => @$options['linksnewwindow'],
+				));
+
 				$fields[] = array(
-						'label' => @$result['signature'],
+						'label' => "<div class='user-signature'>$content</div>",
 						'type' => 'static',
 				);
 				return array(

@@ -55,6 +55,7 @@
 					qa_opt('signatures_q_enable',(bool)qa_post_text('signatures_q_enable'));
 					qa_opt('signatures_a_enable',(bool)qa_post_text('signatures_a_enable'));
 					qa_opt('signatures_c_enable',(bool)qa_post_text('signatures_c_enable'));
+					qa_opt('signatures_profile_enable',(bool)qa_post_text('signatures_profile_enable'));
 					qa_opt('signatures_length',(int)qa_post_text('signatures_length'));
 					qa_opt('signatures_format',(int)qa_post_text('signatures_format'));
 					qa_opt('signatures_header',qa_post_text('signatures_header'));
@@ -99,6 +100,13 @@
 				'label' => 'in comments',
 				'tags' => 'NAME="signatures_c_enable"',
 				'value' => qa_opt('signatures_c_enable'),
+				'type' => 'checkbox',
+			);
+			
+			$fields[] = array(
+				'label' => 'Show signatures in public profiles',
+				'tags' => 'NAME="signatures_profile_enable"',
+				'value' => qa_opt('signatures_profile_enable'),
 				'type' => 'checkbox',
 			);
 			$fields[] = array(
