@@ -1,5 +1,5 @@
-(function($){
-    $.fn.textLimiter = function(options) {
+(function(jQuery){
+    jQuery.fn.textLimiter = function(options) {
 	return this.each(function() {
 	    var $this = $(this);
 	    options = $.extend(
