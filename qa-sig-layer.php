@@ -212,7 +212,7 @@
 				));
 
 				$fields[] = array(
-						'label' => "<div class='user-signature'>$content</div>",
+						'label' => "<div class='user-signature'>$signature</div>",
 						'type' => 'static',
 				);
 				return array(
