@@ -29,8 +29,8 @@
 					$error = 'Max possible signature length is 1000 characters';
 				}
 				else {
-					if(!qa_opt('signatures_c_enable') && qa_post_text('signatures_enable')) {
-						$table_exists = qa_db_read_one_value(qa_db_query_sub("SHOW TABLES LIKE '^usersignature'"),true);
+					if(!qa_opt('signatures_enable') && qa_post_text('signatures_enable')) {
+						$table_exists = qa_db_read_one_value(qa_db_query_sub("SHOW TABLES LIKE '^usersignatures'"),true);
 						if(!$table_exists) {
 							qa_db_query_sub(
 							'CREATE TABLE ^usersignatures ('.
@@ -42,11 +42,11 @@
 							);			
 						}
 					}
-					qa_opt('signatures_enable',qa_post_text('signatures_enable'));
-					qa_opt('signatures_q_enable',qa_post_text('signatures_q_enable'));
-					qa_opt('signatures_a_enable',qa_post_text('signatures_a_enable'));
-					qa_opt('signatures_c_enable',qa_post_text('signatures_c_enable'));
-					qa_opt('signatures_length',qa_post_text('signatures_length'));
+					qa_opt('signatures_enable',(bool)qa_post_text('signatures_enable'));
+					qa_opt('signatures_q_enable',(bool)qa_post_text('signatures_q_enable'));
+					qa_opt('signatures_a_enable',(bool)qa_post_text('signatures_a_enable'));
+					qa_opt('signatures_c_enable',(bool)qa_post_text('signatures_c_enable'));
+					qa_opt('signatures_length',(int)qa_post_text('signatures_length'));
 					qa_opt('signatures_format',(int)qa_post_text('signatures_format'));
 					$ok = 'Settings Saved.';
 				}
@@ -96,7 +96,7 @@
 			$fields[] = array(
 				'label' => 'Signature length (chars)',
 				'type' => 'number',
-				'value' => qa_opt('signatures_length'),
+				'value' => (int)qa_opt('signatures_length'),
 				'tags' => 'NAME="signatures_length"',
 				'note' => 'max possible is 1000 characters',
 			);		   

@@ -40,12 +40,12 @@
 						$keys2 = array_splice($keys, $insertBefore);
 						$vals2 = array_splice($vals, $insertBefore);
 
-						$keys[] = 'custom-badges';
+						$keys[] = 'form-signature';
 						$vals[] = $this->user_signature_form();
 
 						$content = array_merge(array_combine($keys, $vals), array_combine($keys2, $vals2));
 					}
-					else $content['custom'] = $this->user_signature_form();  // this shouldn't happen
+					else $content['form-signature'] = $this->user_signature_form();  // this shouldn't happen
 
 				}
 			}
@@ -56,7 +56,7 @@
 
 	// worker functions
 
-		function user_badge_form() {
+		function user_signature_form() {
 
 			$ok = null;
 			
@@ -109,7 +109,8 @@
 			if(qa_get_logged_in_handle() == $handle) {
 				$fields[] = array(
 						'label' => 'Signature',
-						'tags' => 'ROWS="8" NAME="signature_text"',
+						'tags' => 'NAME="signature_text"',
+						'rows' => 8,
 						'value' => @$result['signature'],
 						'type' => 'textarea',
 				);
