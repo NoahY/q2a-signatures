@@ -37,6 +37,7 @@
 								'userid INT(11) NOT NULL,'.
 								'signature VARCHAR (1000) DEFAULT \'\','.
 								'id INT(11) NOT NULL AUTO_INCREMENT,'.
+								'UNIQUE (userid)'.
 								'PRIMARY KEY (id)'.
 							') ENGINE=MyISAM DEFAULT CHARSET=utf8'
 							);			

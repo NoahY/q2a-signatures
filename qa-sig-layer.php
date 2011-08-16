@@ -57,37 +57,6 @@
 	// worker functions
 
 		function user_signature_form() {
-
-			$ok = null;
-			
-			if (qa_clicked('signature_save')) {
-				if(qa_post_text('signature_text') > qa_opt('signatures_length')) {
-					$error = 'Max possible signature length is 1000 characters';
-				}
-				else {
-					if(!qa_opt('signatures_c_enable') && qa_post_text('signatures_enable')) {
-						$table_exists = qa_db_read_one_value(qa_db_query_sub('SHOW TABLES LIKE ^usersignature'),true);
-						if(!$table_exists) {
-							qa_db_query_sub(
-							'CREATE TABLE ^usersignatures ('.
-								'userid INT(11) NOT NULL,'.
-								'signature VARCHAR (1000) DEFAULT \'\','.
-								'id INT(11) NOT NULL AUTO_INCREMENT,'.
-								'PRIMARY KEY (id)'.
-							') ENGINE=MyISAM DEFAULT CHARSET=utf8'
-							);			
-						}
-					}
-					qa_opt('signatures_enable',qa_post_text('signatures_enable'));
-					qa_opt('signatures_q_enable',qa_post_text('signatures_q_enable'));
-					qa_opt('signatures_a_enable',qa_post_text('signatures_a_enable'));
-					qa_opt('signatures_c_enable',qa_post_text('signatures_c_enable'));
-					qa_opt('signatures_length',qa_post_text('signatures_length'));
-					qa_opt('signatures_format',(int)qa_post_text('signatures_format'));
-					$ok = 'Settings Saved.';
-				}
-			}
-			
 			// displays signature form in user profile
 			
 			global $qa_request;
@@ -97,6 +66,22 @@
 			$userid = $this->getuserfromhandle($handle);
 			
 			if(!$userid) return;
+
+			$ok = null;
+			
+			if (qa_clicked('signature_save')) {
+				if(qa_post_text('signature_text') > qa_opt('signatures_length')) {
+					$error = 'Max possible signature length is 1000 characters';
+				}
+				else {
+					qa_db_query_sub(
+						'INSERT INTO ^usersignatures (userid,signature) VALUES (#,$) ON DUPLICATE KEY UPDATE ^usersignatures SET signature=$ WHERE userid=#',
+						$userid,qa_post_text('signature_text'),qa_post_text('signature_text'),$userid
+					);
+					$ok = 'Signature Saved.';
+				}
+			}
+			
 
 			$result = qa_db_read_one_value(
 				qa_db_query_sub(
@@ -120,7 +105,9 @@
 				);
 
 				return array(
-					'title'=> 'Signature',
+					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"'
+					
+					'title' => 'Signature',
 					
 					'ok' => ($ok && !isset($error)) ? $ok : null,
 
