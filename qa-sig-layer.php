@@ -116,7 +116,7 @@
 				$buttons[] = array(
 						'label' => 'Save',
 						'tags' => 'NAME="signature_save"',
-					),
+				);
 
 				return array(
 					'title'=> 'Signature',
