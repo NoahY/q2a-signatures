@@ -12,6 +12,7 @@ Features
 - signature creation in user profile
 - full q2a formatting integration and choice of editors via admin/plugins
 - toggle showing signatures publicly in user profile
+- jQuery character left count warning
 - switch on and off via admin/plugins
 - toggle signatures for q,a,c via admin/plugins
 - set custom signature header/footer
