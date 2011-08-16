@@ -66,10 +66,12 @@
 					
 			// Create the form for display
 			
-			$formats = qa_list_modules('viewer');
+			$formats = qa_list_modules('editor');
 			
-			$formats[]='html';
-				
+			foreach ($formats as $key => $format) 
+				if(!strlen($format)) 
+					$formats[$key] = qa_lang_html('admin/basic_editor');		
+			
 			$fields = array();
 			
 			$fields[] = array(
