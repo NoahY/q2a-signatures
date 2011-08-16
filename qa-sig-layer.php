@@ -41,7 +41,8 @@
 		color:red;
 	}
 	
-</style>');			
+</style>');		
+			}	
 		}
 		function head_script()
 		{
