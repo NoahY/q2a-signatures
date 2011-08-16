@@ -9,8 +9,12 @@ This is a plugin for **Question2Answer** that provides user signature functional
 --------
 Features
 --------
-- html/plaintext signature in user profile shows up in q,a,c
+- signature creation in user profile
+- full q2a formatting integration and choice of editors via admin/plugins
+- toggle showing signatures publicly in user profile
 - switch on and off via admin/plugins
+- toggle signatures for q,a,c via admin/plugins
+- set custom signature header/footer
 
 ------------
 Installation
