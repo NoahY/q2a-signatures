@@ -12,25 +12,23 @@
 			}
 			
 		}
-		function allow_template($template)
-		{
-			return ($template!='user');
-		}	
+		
+		var $signatures;
 		
 	// theme replacement functions
 	
 		function main_parts($content)
 		{
 			if (qa_opt('signatures_enable')) {
-			
-				// add user badge list
+
+				// add user signature
 
 				if($this->template == 'user') { 
 					if($content['q_list']) {  // paranoia
 					
 						// array splicing kungfu thanks to Stack Exchange
 						
-						// This adds custom-badges before q_list
+						// This adds form-signature before q_list
 					
 						$keys = array_keys($content);
 						$vals = array_values($content);
@@ -53,7 +51,42 @@
 			qa_html_theme_base::main_parts($content);
 
 		}
+		function q_view_content($q_view)
+		{
 
+			if (qa_opt('signatures_enable') && qa_opt('signatures_q_enable')) {
+				$result = qa_db_read_all_assoc(
+					qa_db_query_sub(
+						'SELECT signature,userid FROM ^usersignatures',
+					)
+				);
+				
+				foreach($result as $user) {
+					$this->signatures[$user['userid']] = $user['signature'];
+				}
+				
+				if(isset($this->signatures[$q_view['userid']])) $q_view['content'].=qa_opt('signatures_separator').$this->signatures[$q_view['userid']];
+			}
+			
+			qa_html_theme_base::q_view_content($q_view);
+
+		}
+		function a_item_content($a_item)
+		{
+			if (qa_opt('signatures_enable') && qa_opt('signatures_a_enable')) {
+				if(isset($this->signatures[$a_item['userid']])) $a_item['content'].=qa_opt('signatures_separator').$this->signatures[$a_item['userid']];
+			}
+			qa_html_theme_base::a_item_content($a_item);
+
+		}
+		function c_item_content($c_item)
+		{
+			if (qa_opt('signatures_enable') && qa_opt('signatures_c_enable')) {
+				if(isset($this->signatures[$c_item['userid']])) $c_item['content'].=qa_opt('signatures_separator').$this->signatures[$c_item['userid']];
+			}
+			qa_html_theme_base::c_item_content($c_item);
+		}
+		
 	// worker functions
 
 		function user_signature_form() {
@@ -81,7 +114,6 @@
 					$ok = 'Signature Saved.';
 				}
 			}
-			
 
 			$result = qa_db_read_one_value(
 				qa_db_query_sub(
