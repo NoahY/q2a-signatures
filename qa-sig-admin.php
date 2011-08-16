@@ -30,7 +30,7 @@
 				}
 				else {
 					if(!qa_opt('signatures_c_enable') && qa_post_text('signatures_enable')) {
-						$table_exists = qa_db_read_one_value(qa_db_query_sub('SHOW TABLES LIKE ^usersignature'),true);
+						$table_exists = qa_db_read_one_value(qa_db_query_sub("SHOW TABLES LIKE '^usersignature'"),true);
 						if(!$table_exists) {
 							qa_db_query_sub(
 							'CREATE TABLE ^usersignatures ('.
