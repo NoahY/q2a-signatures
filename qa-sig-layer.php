@@ -7,6 +7,8 @@
 			switch($option) {
 				case 'signatures_length':
 					return 1000;
+				case 'signatures_separator':
+					return '<hr/>';
 				default:
 					return false;
 			}
