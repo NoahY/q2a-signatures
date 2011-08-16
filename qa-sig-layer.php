@@ -24,7 +24,101 @@
 		var $signatures;
 		
 	// theme replacement functions
+		function doctype()
+		{
+			if (qa_opt('signatures_enable')) {
 
+				// add user signature
+
+				if($this->template == 'user') { 
+					$sig_form = $this->user_signature_form();
+					
+					// readd scripts for forms...
+					
+					$script=array('<SCRIPT TYPE="text/javascript"><!--');
+					
+					$qa_content = $this->content;
+					
+					if (isset($qa_content['script_var']))
+						foreach ($qa_content['script_var'] as $var => $value)
+							$script[]='var '.$var.'='.qa_js($value).';';
+							
+					if (isset($qa_content['script_lines']))
+						foreach ($qa_content['script_lines'] as $scriptlines) {
+							$script[]='';
+							$script=array_merge($script, $scriptlines);
+						}
+						
+					if (isset($qa_content['focusid']))
+						$qa_content['script_onloads'][]=array(
+							"var elem=document.getElementById(".qa_js($qa_content['focusid']).");",
+							"if (elem) {",
+							"\telem.select();",
+							"\telem.focus();",
+							"}",
+						);
+						
+					if (isset($qa_content['script_onloads'])) {
+						array_push($script,
+							'',
+							'var qa_oldonload=window.onload;',
+							'window.onload=function() {',
+							"\tif (typeof qa_oldonload=='function')",
+							"\t\tqa_oldonload();"
+						);
+						
+						foreach ($qa_content['script_onloads'] as $scriptonload) {
+							$script[]="\t";
+							
+							foreach ((array)$scriptonload as $scriptline)
+								$script[]="\t".$scriptline;
+						}
+				
+						$script[]='}';
+					}
+					
+					$script[]='//--></SCRIPT>';
+					
+					if (isset($qa_content['script_rel'])) {
+						$uniquerel=array_unique($qa_content['script_rel']); // remove any duplicates
+						foreach ($uniquerel as $script_rel)
+							$script[]='<SCRIPT SRC="'.qa_html($qa_root_url_relative.$script_rel).'" TYPE="text/javascript"></SCRIPT>';
+					}
+					
+					if (isset($qa_content['script_src']))
+						foreach ($qa_content['script_src'] as $script_src)
+							$script[]='<SCRIPT SRC="'.qa_html($script_src).'" TYPE="text/javascript"></SCRIPT>';
+				
+					$this->content['script']=array_merge($this->content['script'],$script);
+
+				
+				// insert our form
+					
+					if($this->content['q_list']) {  // paranoia
+						// array splicing kungfu thanks to Stack Exchange
+						
+						// This adds form-signature before q_list
+					
+						$keys = array_keys($this->content);
+						$vals = array_values($this->content);
+
+						$insertBefore = array_search('q_list', $keys);
+
+						$keys2 = array_splice($keys, $insertBefore);
+						$vals2 = array_splice($vals, $insertBefore);
+
+						$keys[] = 'form-signature';
+						$vals[] = $sig_form;
+
+						$this->content = array_merge(array_combine($keys, $vals), array_combine($keys2, $vals2));
+					}
+					else $this->content['form-signature'] = $sig_form;  // this shouldn't happen
+
+				}
+			}
+
+			qa_html_theme_base::doctype();
+		}
 		function head_css()
 		{
 			qa_html_theme_base::head_css();
@@ -44,12 +138,14 @@
 </style>');		
 			}	
 		}
-		function head_script()
+		function head_custom()
 		{
-			qa_html_theme_base::head_script();
+			qa_html_theme_base::head_custom();
 			if($this->template == 'user' && qa_opt('signatures_enable')) {
+				$formats = qa_list_modules('editor');
+				$editorname = $formats[qa_opt('signatures_format')];
 				$handle = preg_replace('/^[^\/]+\/([^\/]+).*/',"$1",$this->request);
-				if(qa_get_logged_in_handle() == $handle) {
+				if(qa_get_logged_in_handle() == $handle && in_array($editorname,array('Basic Editor','Markdown Editor'))) {
 					$this->output_raw('<script src="'.QA_HTML_THEME_LAYER_URLTOROOT.'textLimitCount.js" type="text/javascript"></script>');
 					$this->output_raw("
 <script>
@@ -65,40 +161,6 @@
 			}
 		}
 	
-		function main_parts($content)
-		{
-			if (qa_opt('signatures_enable')) {
-
-				// add user signature
-
-				if($this->template == 'user') { 
-					if($content['q_list']) {  // paranoia
-					
-						// array splicing kungfu thanks to Stack Exchange
-						
-						// This adds form-signature before q_list
-					
-						$keys = array_keys($content);
-						$vals = array_values($content);
-
-						$insertBefore = array_search('q_list', $keys);
-
-						$keys2 = array_splice($keys, $insertBefore);
-						$vals2 = array_splice($vals, $insertBefore);
-
-						$keys[] = 'form-signature';
-						$vals[] = $this->user_signature_form();
-
-						$content = array_merge(array_combine($keys, $vals), array_combine($keys2, $vals2));
-					}
-					else $content['form-signature'] = $this->user_signature_form();  // this shouldn't happen
-
-				}
-			}
-
-			qa_html_theme_base::main_parts($content);
-
-		}
 		function q_view_content($q_view)
 		{
 
@@ -166,46 +228,53 @@
 			
 			if(!$userid) return;
 
-			$ok = null;
-			
-			$formats = qa_list_modules('editor');
-			
-			foreach ($formats as $key => $format) 
-				if(!strlen($format)) 
-					$formats[$key] = qa_lang_html('admin/basic_editor');
-			
-			$editorname = $formats[qa_opt('signatures_format')];
-			$editor=qa_load_module('editor', $editorname);
-			$readdata=$editor->read_post('signature_text');
-			$informat=$readdata['format'];
-			
-			if (qa_clicked('signature_save')) {
-				if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {
-					$error = 'Max possible signature length is 1000 characters';
-				}
-				else {
-
-					
-					$incontent = qa_post_text('signature_text');
-					
-					qa_db_query_sub(
-						'INSERT INTO ^usersignatures (userid,signature) VALUES (#,$) ON DUPLICATE KEY UPDATE signature=$',
-						$userid,$incontent,$incontent
-					);
-					$ok = 'Signature Saved.';
-				}
-			}
-			
-			$content = qa_db_read_one_value(
-				qa_db_query_sub(
-					'SELECT signature FROM ^usersignatures WHERE userid=#',
-					$userid
-				),
-				true
-			);
-			
 			if(qa_get_logged_in_handle() == $handle) {
+
+				$ok = null;
 				
+				$formats = qa_list_modules('editor');
+				
+				foreach ($formats as $key => $format) 
+					if(!strlen($format)) 
+						$formats[$key] = qa_lang_html('admin/basic_editor');
+				
+				$editorname = $formats[qa_opt('signatures_format')];
+				$editor=qa_load_module('editor', $editorname);
+				
+				if (qa_clicked('signature_save')) {
+				
+					if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {
+						$error = 'Max possible signature length is 1000 characters';
+					}
+					else {
+						
+						$readdata=$editor->read_post('signature_text');
+						$informat=$readdata['format'];	
+						
+						$incontent = qa_post_text('signature_text');
+						
+						qa_db_query_sub(
+							'INSERT INTO ^usersignatures (userid,signature,format) VALUES (#,$,$) ON DUPLICATE KEY UPDATE signature=$,format=$',
+							$userid,$incontent,$informat,$incontent,$informat
+						);
+						$ok = 'Signature Saved.';
+					}
+				}
+				$content = qa_db_read_one_assoc(
+					qa_db_query_sub(
+						'SELECT signature,format FROM ^usersignatures WHERE userid=#',
+						$userid
+					),
+					true
+				);
+				
+				$fields['content'] = $editor->get_field($this->content, $content['signature'], $content['format'], 'signature_text', 12, true);
+
+				if(in_array($editorname,array('Basic Editor','Markdown Editor'))) $fields['elCount'] = array(
+					'label' => '<div id="elCount">'.qa_opt('signatures_length').'</div>',
+					'type' => 'static',
+				);
+
 				$form=array(
 				
 					'ok' => ($ok && !isset($error)) ? $ok : null,
@@ -216,15 +285,7 @@
 
 					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
 					
-					'fields' => array(
-						
-						'content' => $editor->get_field($this->content, $content, $informat, 'signature_text', 12, true),
-
-						'elCount' => array(
-							'label' => '<div id="elCount">'.qa_opt('signatures_length').'</div>',
-							'type' => 'static',
-							)
-					),
+					'fields' => $fields,
 					
 					'buttons' => array(
 						array(
@@ -240,7 +301,16 @@
 				);
 				return $form;
 			}
-			else if($content && qa_opt('signatures_profile_enable')) {
+			else if(qa_opt('signatures_profile_enable')) {
+				$content = qa_db_read_one_assoc(
+					qa_db_query_sub(
+						'SELECT signature,format FROM ^usersignatures WHERE userid=#',
+						$userid
+					),
+					true
+				);
+
+				if(!$content) return;
 				
 				$viewer=qa_load_viewer($content, $informat);
 				
