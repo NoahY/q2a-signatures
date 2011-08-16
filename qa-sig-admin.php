@@ -6,6 +6,8 @@
 			switch($option) {
 				case 'signatures_length':
 					return 1000;
+				case 'signatures_separator':
+					return '<hr/>';
 				default:
 					return false;				
 			}
@@ -49,6 +51,7 @@
 					qa_opt('signatures_c_enable',(bool)qa_post_text('signatures_c_enable'));
 					qa_opt('signatures_length',(int)qa_post_text('signatures_length'));
 					qa_opt('signatures_format',(int)qa_post_text('signatures_format'));
+					qa_opt('signatures_separator',qa_post_text('signatures_separator'));
 					$ok = 'Settings Saved.';
 				}
 			}
@@ -108,6 +111,12 @@
 				'options' => $formats,
 				'value' => $formats[qa_opt('signatures_format')],
 			);
+			$fields[] = array(
+				'label' => 'Signature separator',
+				'type' => 'text',
+				'value' => qa_opt('signatures_separator'),
+				'tags' => 'NAME="signatures_separator"',
+			);		   
 				
 		  
 
