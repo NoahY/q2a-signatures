@@ -55,7 +55,7 @@
 <script>
 	var signature_max_length = ".(qa_opt('signatures_length')?qa_opt('signatures_length'):1000).";
 	jQuery('document').ready(function(){
-		$('textarea[name=\"signature_text\"]').textLimiter({
+		jQuery('textarea[name=\"signature_text\"]').textLimiter({
 		maxLength: signature_max_length,
 		elCount: 'elCount'
 	  });
