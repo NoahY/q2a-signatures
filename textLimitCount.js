@@ -36,10 +36,10 @@
 	var $cc = $('#' + $obj.attr('divName'))
 	var left = maxLength - text.length;
 	var color = 'green';
-	if(left<20) color = (left<5?'red':'yellow');
+	if(left<20) color = (left<5?'red':'orange');
 
 	$cc.html(left);
-	$cc.css('color',color);
+	$cc.attr('class','sig-left-'+color);
 	if (parseInt($cc.html()) < 0)  
 	    $cc.html('0');
 

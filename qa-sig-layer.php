@@ -25,6 +25,24 @@
 		
 	// theme replacement functions
 
+		function head_css()
+		{
+			qa_html_theme_base::head_css();
+			if($this->template == 'user' && qa_opt('signatures_enable')) {
+					$this->output_raw('
+<style>
+	.sig-left-green {
+		color:green;
+	}
+	.sig-left-orange {
+		color:orange;
+	}
+	.sig-left-red {
+		color:red;
+	}
+	
+</style>');			
+		}
 		function head_script()
 		{
 			qa_html_theme_base::head_script();
