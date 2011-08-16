@@ -115,11 +115,18 @@
 						$formats = qa_list_modules('editor');
 						$editorname = $formats[qa_opt('signatures_format')];
 						$editor=qa_load_module('editor', $editorname);
-						$readdata=$editor->read_post();
+						$readdata=$editor->read_post('signature_text');
 						$informat=$readdata['format'];					
 						
 						$viewer=qa_load_viewer($user['signature'], $informat);
 						
+						global $options;
+						
+						$signature=$viewer->get_html($user['signature'], $informat, array(
+							'blockwordspreg' => @$options['blockwordspreg'],
+							'showurllinks' => @$options['showurllinks'],
+							'linksnewwindow' => @$options['linksnewwindow'],
+						));
 					}
 					$this->signatures[$user['userid']] = $signature;
 				}
@@ -178,15 +185,12 @@
 				}
 				else {
 
-					// formatting
-							
+					
 					$incontent = qa_post_text('signature_text');
-					$viewer = qa_load_viewer($incontent, $informat);
-					$outtext = $viewer->get_text($incontent, $informat, array());				
 					
 					qa_db_query_sub(
 						'INSERT INTO ^usersignatures (userid,signature) VALUES (#,$) ON DUPLICATE KEY UPDATE signature=$',
-						$userid,$outtext,$outtext
+						$userid,$incontent,$incontent
 					);
 					$ok = 'Signature Saved.';
 				}
@@ -242,6 +246,12 @@
 				
 				global $options;
 				
+				$signature=$viewer->get_html($content, $informat, array(
+					'blockwordspreg' => @$options['blockwordspreg'],
+					'showurllinks' => @$options['showurllinks'],
+					'linksnewwindow' => @$options['linksnewwindow'],
+				));
+
 				$fields[] = array(
 						'label' => qa_opt('signatures_header').$signature.qa_opt('signatures_footer'),
 						'type' => 'static',
