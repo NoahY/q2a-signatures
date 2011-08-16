@@ -126,14 +126,14 @@
 			$fields[] = array(
 				'label' => 'Signature header',
 				'type' => 'text',
-				'value' => qa_opt('signatures_header'),
+				'value' => qa_html(qa_opt('signatures_header')),
 				'tags' => 'NAME="signatures_header"',
 			);		   
 				
 			$fields[] = array(
 				'label' => 'Signature footer',
 				'type' => 'text',
-				'value' => qa_opt('signatures_footer'),
+				'value' => qa_html(qa_opt('signatures_footer')),
 				'tags' => 'NAME="signatures_footer"',
 			);		   
 				
