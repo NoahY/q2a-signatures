@@ -105,7 +105,7 @@
 				);
 
 				return array(
-					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"'
+					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
 					
 					'title' => 'Signature',
 					
