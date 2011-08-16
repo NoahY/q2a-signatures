@@ -6,10 +6,16 @@
 			switch($option) {
 				case 'signatures_length':
 					return 1000;
-				case 'signatures_separator':
-					return '<hr/>';
+					break;
+				case 'signatures_header':
+					return '<br>';
+					break;
+				case 'signatures_footer':
+					return '';
+					break;
 				default:
 					return false;				
+					break;
 			}
 			
 		}
@@ -51,7 +57,8 @@
 					qa_opt('signatures_c_enable',(bool)qa_post_text('signatures_c_enable'));
 					qa_opt('signatures_length',(int)qa_post_text('signatures_length'));
 					qa_opt('signatures_format',(int)qa_post_text('signatures_format'));
-					qa_opt('signatures_separator',qa_post_text('signatures_separator'));
+					qa_opt('signatures_header',qa_post_text('signatures_header'));
+					qa_opt('signatures_footer',qa_post_text('signatures_footer'));
 					$ok = 'Settings Saved.';
 				}
 			}
@@ -112,10 +119,17 @@
 				'value' => $formats[qa_opt('signatures_format')],
 			);
 			$fields[] = array(
-				'label' => 'Signature separator',
+				'label' => 'Signature header',
 				'type' => 'text',
-				'value' => qa_opt('signatures_separator'),
-				'tags' => 'NAME="signatures_separator"',
+				'value' => qa_opt('signatures_header'),
+				'tags' => 'NAME="signatures_header"',
+			);		   
+				
+			$fields[] = array(
+				'label' => 'Signature footer',
+				'type' => 'text',
+				'value' => qa_opt('signatures_footer'),
+				'tags' => 'NAME="signatures_footer"',
 			);		   
 				
 		  
