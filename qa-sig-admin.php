@@ -65,13 +65,8 @@
 			
 					
 			// Create the form for display
-			$formats = array();
-			$formats[] = 'plain text';
 			
-			$editors = qa_list_modules('viewer');
-			if(in_array('Markdown Viewer',$editors)) {
-			$formats[] = 'markdown';
-			}
+			$formats = qa_list_modules('viewer');
 			
 			$formats[]='html';
 				

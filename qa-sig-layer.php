@@ -109,21 +109,33 @@
 			if(!$userid) return;
 
 			$ok = null;
+
+			$editorname = qa_opt('signatures_format');
+			$editor=qa_load_module('editor', $editorname);
+			$readdata=$editor->read_post('signature_text');
+			$informat=$readdata['format'];
 			
 			if (qa_clicked('signature_save')) {
 				if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {
 					$error = 'Max possible signature length is 1000 characters';
 				}
 				else {
+
+					// formatting
+							
+					$incontent = qa_post_text('signature_text');
+					$viewer = qa_load_viewer($incontent, $informat);
+					$outtext = $viewer->get_text($incontent, $informat, array());				
+					
 					qa_db_query_sub(
 						'INSERT INTO ^usersignatures (userid,signature) VALUES (#,$) ON DUPLICATE KEY UPDATE signature=$',
-						$userid,qa_post_text('signature_text'),qa_post_text('signature_text')
+						$userid,$outtext,$outtext
 					);
 					$ok = 'Signature Saved.';
 				}
 			}
-
-			$result = qa_db_read_one_value(
+			
+			$content = qa_db_read_one_value(
 				qa_db_query_sub(
 					'SELECT signature FROM ^usersignatures WHERE userid=#',
 					$userid
@@ -132,32 +144,33 @@
 			);
 			
 			if(qa_get_logged_in_handle() == $handle) {
-				$fields[] = array(
-						'label' => 'Signature',
-						'tags' => 'NAME="signature_text"',
-						'rows' => 8,
-						'value' => @$result,
-						'type' => 'textarea',
-				);
-				$buttons[] = array(
-						'label' => 'Save',
-						'tags' => 'NAME="signature_save"',
-				);
-
-				return array(
-					
-					'title' => '<a name="signature_text">Signature</a>',
-
-					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
-
+				
+				$form=array(
 					'style' => 'tall',
 					
-					'ok' => ($ok && !isset($error)) ? $ok : null,
-
-					'fields' => $fields,
-
-					'buttons' => $buttons
+					'fields' => array(
+						'title' => array(
+							'label' => 'Signature',
+							'tags' => 'NAME="signature_title"',
+						),
+						
+						'content' => $editor->get_field($this->content, $content, $informat, 'signature_text', 12, true)
+						
+					),
+					
+					'buttons' => array(
+						array(
+							'label' => qa_lang_html('main/save_button'),
+							'tags' => 'NAME="signature_save"',
+						),
+					),
+					
+					'hidden' => array(
+						'editor' => qa_html($editorname),
+						'dosavesig' => '1',
+					),
 				);
+				return $form;
 			}
 			else {
 				$fields[] = array(
