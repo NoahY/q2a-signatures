@@ -120,13 +120,6 @@
 						
 						$viewer=qa_load_viewer($user['signature'], $informat);
 						
-						global $options;
-						
-						$signature=$viewer->get_html($user['signature'], $informat, array(
-							'blockwordspreg' => @$options['blockwordspreg'],
-							'showurllinks' => @$options['showurllinks'],
-							'linksnewwindow' => @$options['linksnewwindow'],
-						));
 					}
 					$this->signatures[$user['userid']] = $signature;
 				}
@@ -249,12 +242,6 @@
 				
 				global $options;
 				
-				$signature=$viewer->get_html($content, $informat, array(
-					'blockwordspreg' => @$options['blockwordspreg'],
-					'showurllinks' => @$options['showurllinks'],
-					'linksnewwindow' => @$options['linksnewwindow'],
-				));
-
 				$fields[] = array(
 						'label' => qa_opt('signatures_header').$signature.qa_opt('signatures_footer'),
 						'type' => 'static',
