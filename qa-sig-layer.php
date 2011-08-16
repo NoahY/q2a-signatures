@@ -205,8 +205,7 @@
 						'content' => $editor->get_field($this->content, $content, $informat, 'signature_text', 12, true),
 
 						'elCount' => array(
-							'label' => qa_opt('signatures_length'),
-							'tags' => 'id="elCount"',
+							'label' => '<div id="elCount">'.qa_opt('signatures_length').'</div>',
 							'type' => 'static',
 							)
 					),

@@ -1,35 +1,35 @@
-    (function($){
-	$.fn.textLimiter = function(options) {
-	    return this.each(function() {
-		var $this = $(this);
-		options = $.extend(
-		    {
-			'maxLength': signature_max_length,
-			'align': 'right',
-			'valign': 'bottom',
-			'show': 'auto',
-			'elCount': 'auto'
-		    }, 
-		    options
-		);
+(function($){
+    $.fn.textLimiter = function(options) {
+	return this.each(function() {
+	    var $this = $(this);
+	    options = $.extend(
+		{
+		    'maxLength': signature_max_length,
+		    'align': 'right',
+		    'valign': 'bottom',
+		    'show': 'auto',
+		    'elCount': 'auto'
+		}, 
+		options
+	    );
 
-		$this.attr('maxLength', options['maxLength']);
+	    $this.attr('maxLength', options['maxLength']);
 
-		$this.keyup(function () { 
-		    processTextAreaText($this); 
-		});
-		$this.keydown(function () { 
-		    processTextAreaText($this); 
-		});
-		$this.change(function () { 
-		    processTextAreaText($this); 
-		});
-
-		$this.attr('divName', options['elCount']);
-		$('#' + $this.attr('divName')).html($this.attr('maxLength') - $this.text().length);
+	    $this.keyup(function () { 
+		processTextAreaText($this); 
 	    });
-	}
-    }
+	    $this.keydown(function () { 
+		processTextAreaText($this); 
+	    });
+	    $this.change(function () { 
+		processTextAreaText($this); 
+	    });
+
+	    $this.attr('divName', options['elCount']);
+	    alert($this.attr('maxLength')-$this.text().length);
+	    $('#' + $this.attr('divName')).html($this.attr('maxLength') - $this.text().length);
+	});
+    };
 
     function processTextAreaText($obj) {
       var maxLength = $obj.attr('maxLength');
@@ -45,16 +45,16 @@
         $obj.text(text.substr(0, maxLength));
     };
 
-	function showCount($obj, align, valign, show) {
+    function showCount($obj, align, valign, show) {
 	  if (show == 'always') {
 		var divName = 'textAreaMaxLengthPlugin_divCharCount_' + $obj.attr('id');
 	  } else {
         var divName = 'textAreaMaxLengthPlugin_divCharCount';
 	  }
       
-	  if (!$('#' + divName).length) {
+	if (!$('#' + divName).length) {
         $('body').append('<div id="' + divName + '"></div>');
-      }
+	    }	
 
 	  $obj.attr('divName', divName);
 
@@ -81,6 +81,5 @@
 	  if (show != 'never') {
 		$cc.fadeTo(200, .5);	      
 	  }
-	}
-  
-  })(jQuery);
+    }
+})(jQuery);
