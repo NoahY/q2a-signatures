@@ -1,46 +1,34 @@
-  (function($){
-    $.fn.textLimiter = function(options) {
-      return this.each(function() {
-	    var $this = $(this);
-        options = $.extend({
-            'maxLength': signature_max_length,
+    (function($){
+	$.fn.textLimiter = function(options) {
+	    return this.each(function() {
+		var $this = $(this);
+		options = $.extend(
+		    {
+			'maxLength': signature_max_length,
 			'align': 'right',
 			'valign': 'bottom',
 			'show': 'auto',
 			'elCount': 'auto'
-		}, options);
+		    }, 
+		    options
+		);
 
 		$this.attr('maxLength', options['maxLength']);
 
-        $this.keyup(function () { 
-          processTextAreaText($this); 
-        });
+		$this.keyup(function () { 
+		    processTextAreaText($this); 
+		});
 		$this.keydown(function () { 
-          processTextAreaText($this); 
-        });
+		    processTextAreaText($this); 
+		});
 		$this.change(function () { 
-          processTextAreaText($this); 
-        });
+		    processTextAreaText($this); 
+		});
 
-        if (options['elCount'] == 'auto') {
-		  if (options['show'] == 'always') {
-		    showCount($this, options['align'], options['valign'], options['show']);
-		  } else if (options['show'] == 'auto') {
-		    $this.focusin(function () {
-              showCount($this, options['align'], options['valign'], options['show']);
-            });
-		  }
-		} else {
-          $this.attr('divName', options['elCount']);
-          $('#' + $this.attr('divName')).html($this.attr('maxLength') - $this.text().length);
-		}
-
-		$this.focusout(function () {
-		  if (options['elCount'] == 'auto' && options['show'] != 'always') {
-            $('#' + $this.attr('divName')).hide();
-		  }
-        });		
-	  });
+		$this.attr('divName', options['elCount']);
+		$('#' + $this.attr('divName')).html($this.attr('maxLength') - $this.text().length);
+	    }
+	});
     };
 
     function processTextAreaText($obj) {

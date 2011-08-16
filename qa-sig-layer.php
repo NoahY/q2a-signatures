@@ -35,7 +35,8 @@
 					$this->output_raw("
 <script>
 	var signature_max_length = ".(qa_opt('signatures_length')?qa_opt('signatures_length'):1000).";
-	jQuery('textarea[name=\"signature_text\"]').textLimiter({
+	jQuery('document').ready(function(){
+		$('textarea[name=\"signature_text\"]').textLimiter({
 		maxLength: signature_max_length,
 		elCount: 'elCount'
 	  });
@@ -205,6 +206,7 @@
 
 						'elCount' => array(
 							'label' => qa_opt('signatures_length'),
+							'tags' => 'id="elCount"',
 							'type' => 'static',
 							)
 					),
