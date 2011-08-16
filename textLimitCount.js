@@ -26,7 +26,7 @@
 	    });
 
 	    $this.attr('divName', options['elCount']);
-	    $('#' + $this.attr('divName')).html($this.attr('maxLength') - $this.text().length);
+	    processTextAreaText($this); 
 	});
     };
 
