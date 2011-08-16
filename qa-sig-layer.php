@@ -29,7 +29,7 @@
 		{
 			qa_html_theme_base::head_script();
 			if($this->template == 'user' && qa_opt('signatures_enable')) {
-				$handle = preg_replace('/^[^\/]+\/([^\/]+).*/',"$1",$qa_request);
+				$handle = preg_replace('/^[^\/]+\/([^\/]+).*/',"$1",$this->request);
 				if(qa_get_logged_in_handle() == $handle) {
 					$this->output_raw('<script src="'.QA_HTML_THEME_LAYER_URLTOROOT.'textLimitCount.js" type="text/javascript"></script>');
 					$this->output_raw("
@@ -37,6 +37,7 @@
 	var signature_max_length = ".(qa_opt('signatures_length')?qa_opt('signatures_length'):1000).";
 	jQuery('textarea[name=\"signature_text\"]').textLimiter({
 		maxLength: signature_max_length,
+		elCount: 'elCount'
 	  });
 	});
 </script>");
@@ -201,12 +202,11 @@
 					'fields' => array(
 						
 						'content' => $editor->get_field($this->content, $content, $informat, 'signature_text', 12, true),
-					/*	
+
 						'elCount' => array(
 							'label' => qa_opt('signatures_length'),
 							'type' => 'static',
 							)
-						*/
 					),
 					
 					'buttons' => array(
