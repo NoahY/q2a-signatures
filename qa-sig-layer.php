@@ -2,28 +2,10 @@
 
 	class qa_html_theme_layer extends qa_html_theme_base {
 
-		function option_default($option) {
-			
-			switch($option) {
-				case 'signatures_length':
-					return 1000;
-					break;
-				case 'signatures_header':
-					return '<br>';
-					break;
-				case 'signatures_footer':
-					return '';
-					break;
-				default:
-					return false;				
-					break;
-			}
-			
-		}
-		
 		var $signatures;
 		
 	// theme replacement functions
+	
 		function doctype()
 		{
 			if (qa_opt('signatures_enable')) {
@@ -37,6 +19,7 @@
 					
 					$script=array('<SCRIPT TYPE="text/javascript"><!--');
 					
+					global $qa_root_url_relative;
 					$qa_content = $this->content;
 					
 					if (isset($qa_content['script_var']))
