@@ -264,7 +264,7 @@
 					
 					'style' => 'tall',
 					
-					'title' => '<a name="signature_text">Signature</a>',
+					'title' => '<a name="signature_text"></a>Signature',
 
 					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
 					

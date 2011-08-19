@@ -6,16 +6,14 @@
 			switch($option) {
 				case 'signatures_length':
 					return 1000;
-					break;
 				case 'signatures_header':
-					return '<br>';
-					break;
+					return '<div class="signature">';
 				case 'signatures_footer':
-					return '';
-					break;
+					return '</div>';
+				case 'signatures_format':
+					return 0;
 				default:
 					return false;				
-					break;
 			}
 			
 		}
@@ -122,7 +120,7 @@
 				'tags' => 'NAME="signatures_format"',
 				'type' => 'select',
 				'options' => $formats,
-				'value' => $formats[qa_opt('signatures_format')],
+				'value' => @$formats[qa_opt('signatures_format')],
 			);
 			$fields[] = array(
 				'label' => 'Signature header',
