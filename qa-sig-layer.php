@@ -128,7 +128,7 @@
 				$formats = qa_list_modules('editor');
 				$editorname = $formats[qa_opt('signatures_format')];
 				$handle = preg_replace('/^[^\/]+\/([^\/]+).*/',"$1",$this->request);
-				if(qa_get_logged_in_handle() == $handle && in_array($editorname,array('Basic Editor','Markdown Editor'))) {
+				if(qa_get_logged_in_handle() == $handle && (!$editorname || $editorname == 'Markdown Editor')) {
 					$this->output_raw('<script src="'.QA_HTML_THEME_LAYER_URLTOROOT.'textLimitCount.js" type="text/javascript"></script>');
 					$this->output_raw("
 <script>
@@ -217,12 +217,10 @@
 				
 				$formats = qa_list_modules('editor');
 				
-				foreach ($formats as $key => $format) 
-					if(!strlen($format)) 
-						$formats[$key] = qa_lang_html('admin/basic_editor');
-				
 				$editorname = $formats[qa_opt('signatures_format')];
 				$editor=qa_load_module('editor', $editorname);
+				error_log(qa_opt('editor_for_qs'));
+				qa_error_log($editor);
 				
 				if (qa_clicked('signature_save')) {
 				
@@ -253,7 +251,7 @@
 				
 				$fields['content'] = $editor->get_field($this->content, $content['signature'], $content['format'], 'signature_text', 12, true);
 
-				if(in_array($editorname,array('Basic Editor','Markdown Editor'))) $fields['elCount'] = array(
+				if((!$editorname || $editorname == 'Markdown Editor')) $fields['elCount'] = array(
 					'label' => '<div id="elCount">'.qa_opt('signatures_length').'</div>',
 					'type' => 'static',
 				);
@@ -294,12 +292,13 @@
 				);
 
 				if(!$content) return;
-				
-				$viewer=qa_load_viewer($content, $informat);
+
+				$informat=$content['format'];					
+				$viewer=qa_load_viewer($content['signature'], $informat);
 				
 				global $options;
 				
-				$signature=$viewer->get_html($content, $informat, array(
+				$signature=qa_viewer_html($content['signature'], $informat, array(
 					'blockwordspreg' => @$options['blockwordspreg'],
 					'showurllinks' => @$options['showurllinks'],
 					'linksnewwindow' => @$options['linksnewwindow'],
@@ -309,9 +308,11 @@
 						'label' => qa_opt('signatures_header').$signature.qa_opt('signatures_footer'),
 						'type' => 'static',
 				);
+
 				return array(
 					'title' => 'Signature',
-					'fields' => $fields
+					'fields' => $fields,
+					'style' => 'tall'
 				);
 			}				
 			
