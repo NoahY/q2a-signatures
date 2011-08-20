@@ -146,22 +146,18 @@
 	
 		function q_view_content($q_view)
 		{
-
+			$this->signatures = array();
 			if (qa_opt('signatures_enable') && qa_opt('signatures_q_enable')) {
 				$result = qa_db_read_all_assoc(
 					qa_db_query_sub(
-						'SELECT signature,userid FROM ^usersignatures'
+						'SELECT signature,userid,format FROM ^usersignatures'
 					)
 				);
 				
 				foreach($result as $user) {
-					if (!empty($user['signature'])) {
+					if ($user['signature']) {
 						
-						$formats = qa_list_modules('editor');
-						$editorname = $formats[qa_opt('signatures_format')];
-						$editor=qa_load_module('editor', $editorname);
-						$readdata=$editor->read_post('signature_text');
-						$informat=$readdata['format'];					
+						$informat=$user['format'];					
 						
 						$viewer=qa_load_viewer($user['signature'], $informat);
 						
@@ -172,11 +168,11 @@
 							'showurllinks' => @$options['showurllinks'],
 							'linksnewwindow' => @$options['linksnewwindow'],
 						));
+						$this->signatures['user'.$user['userid']] = $signature;
 					}
-					$this->signatures[$user['userid']] = $signature;
 				}
-				
-				if(isset($this->signatures[$q_view['raw']['userid']])) $q_view['content'].=qa_opt('signatures_header').$this->signatures[$q_view['raw']['userid']].qa_opt('signatures_footer');
+				qa_error_log($this->signatures);
+				if(@$this->signatures['user'.$q_view['raw']['userid']]) $q_view['content'].=qa_opt('signatures_header').$this->signatures['user'.$q_view['raw']['userid']].qa_opt('signatures_footer');
 			}
 			
 			qa_html_theme_base::q_view_content($q_view);

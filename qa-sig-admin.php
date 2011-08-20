@@ -3,6 +3,8 @@
 
 		function option_default($option) {
 			
+			
+			
 			switch($option) {
 				case 'signatures_length':
 					return 1000;
