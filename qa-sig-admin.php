@@ -13,7 +13,7 @@
 				case 'signatures_format':
 					return 0;
 				default:
-					return false;				
+					return null;				
 			}
 			
 		}
