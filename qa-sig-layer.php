@@ -172,7 +172,10 @@
 					}
 				}
 				qa_error_log($this->signatures);
-				if(@$this->signatures['user'.$q_view['raw']['userid']]) $q_view['content'].=qa_opt('signatures_header').$this->signatures['user'.$q_view['raw']['userid']].qa_opt('signatures_footer');
+				if(@$this->signatures['user'.$q_view['raw']['userid']]) {
+					 if(!isset($q_view['content'])) $q_view['content'] = '';
+					$q_view['content'].=qa_opt('signatures_header').$this->signatures['user'.$q_view['raw']['userid']].qa_opt('signatures_footer');
+				}
 			}
 			
 			qa_html_theme_base::q_view_content($q_view);
@@ -181,7 +184,7 @@
 		function a_item_content($a_item)
 		{
 			if (qa_opt('signatures_enable') && qa_opt('signatures_a_enable')) {
-				if(isset($this->signatures[$a_item['raw']['userid']])) $a_item['content'].=qa_opt('signatures_header').$this->signatures[$a_item['raw']['userid']].qa_opt('signatures_footer');
+				if(isset($this->signatures[$a_item['raw']['userid']]) && isset($a_item['content'])) $a_item['content'].=qa_opt('signatures_header').$this->signatures[$a_item['raw']['userid']].qa_opt('signatures_footer');
 			}
 			qa_html_theme_base::a_item_content($a_item);
 
@@ -189,7 +192,7 @@
 		function c_item_content($c_item)
 		{
 			if (qa_opt('signatures_enable') && qa_opt('signatures_c_enable')) {
-				if(isset($this->signatures[$c_item['raw']['userid']])) $c_item['content'].=qa_opt('signatures_header').$this->signatures[$c_item['raw']['userid']].qa_opt('signatures_footer');
+				if(isset($this->signatures[$c_item['raw']['userid']]) && isset($c_item['content'])) $c_item['content'].=qa_opt('signatures_header').$this->signatures[$c_item['raw']['userid']].qa_opt('signatures_footer');
 			}
 			qa_html_theme_base::c_item_content($c_item);
 		}
