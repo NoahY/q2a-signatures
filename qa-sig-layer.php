@@ -171,7 +171,6 @@
 						$this->signatures['user'.$user['userid']] = $signature;
 					}
 				}
-				qa_error_log($this->signatures);
 				if(@$this->signatures['user'.$q_view['raw']['userid']]) {
 					 if(!isset($q_view['content'])) $q_view['content'] = '';
 					$q_view['content'].=qa_opt('signatures_header').$this->signatures['user'.$q_view['raw']['userid']].qa_opt('signatures_footer');
@@ -218,8 +217,6 @@
 				
 				$editorname = $formats[qa_opt('signatures_format')];
 				$editor=qa_load_module('editor', $editorname);
-				error_log(qa_opt('editor_for_qs'));
-				qa_error_log($editor);
 				
 				if (qa_clicked('signature_save')) {
 				
