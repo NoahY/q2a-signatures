@@ -13,6 +13,7 @@
 				// add user signature
 
 				if($this->template == 'user') { 
+					
 					$sig_form = $this->user_signature_form();
 					
 					// readd scripts for forms...
@@ -219,7 +220,6 @@
 				$editor=qa_load_module('editor', $editorname);
 				
 				if (qa_clicked('signature_save')) {
-				
 					if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {
 						$error = 'Max possible signature length is 1000 characters';
 					}
