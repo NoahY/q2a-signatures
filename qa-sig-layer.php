@@ -173,7 +173,7 @@
 					}
 				}
 				if(@$this->signatures['user'.$q_view['raw']['userid']]) {
-					 if(!isset($q_view['content'])) $q_view['content'] = '';
+					if(!isset($q_view['content'])) $q_view['content'] = '';
 					$q_view['content'].=qa_opt('signatures_header').$this->signatures['user'.$q_view['raw']['userid']].qa_opt('signatures_footer');
 				}
 			}
