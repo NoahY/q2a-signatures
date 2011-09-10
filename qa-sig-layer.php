@@ -151,7 +151,7 @@
 			if (qa_opt('signatures_enable') && qa_opt('signatures_q_enable')) {
 				$result = qa_db_read_all_assoc(
 					qa_db_query_sub(
-						'SELECT signature,userid,format FROM ^usersignatures'
+						'SELECT BINARY signature AS signature, userid,format FROM ^usersignatures'
 					)
 				);
 				
@@ -239,7 +239,7 @@
 				}
 				$content = qa_db_read_one_assoc(
 					qa_db_query_sub(
-						'SELECT signature,format FROM ^usersignatures WHERE userid=#',
+						'SELECT BINARY signature AS signature,format FROM ^usersignatures WHERE userid=#',
 						$userid
 					),
 					true
@@ -281,7 +281,7 @@
 			else if(qa_opt('signatures_profile_enable')) {
 				$content = qa_db_read_one_assoc(
 					qa_db_query_sub(
-						'SELECT BINARY signature, BINARY format FROM ^usersignatures WHERE userid=#',
+						'SELECT BINARY signature as signature, format FROM ^usersignatures WHERE userid=#',
 						$userid
 					),
 					true
