@@ -281,7 +281,7 @@
 			else if(qa_opt('signatures_profile_enable')) {
 				$content = qa_db_read_one_assoc(
 					qa_db_query_sub(
-						'SELECT signature,format FROM ^usersignatures WHERE userid=#',
+						'SELECT BINARY signature, BINARY format FROM ^usersignatures WHERE userid=#',
 						$userid
 					),
 					true
