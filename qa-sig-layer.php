@@ -301,7 +301,7 @@
 				));
 
 				$fields[] = array(
-						'label' => qa_html(qa_opt('signatures_header').$signature.qa_opt('signatures_footer')),
+						'label' => qa_opt('signatures_header').$signature.qa_opt('signatures_footer'),
 						'type' => 'static',
 				);
 
