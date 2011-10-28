@@ -125,7 +125,7 @@
 		function head_custom()
 		{
 			qa_html_theme_base::head_custom();
-			if($this->template == 'user' && qa_opt('signatures_enable')) {
+			if(@$this->template == 'user' && qa_opt('signatures_enable')) {
 				$formats = qa_list_modules('editor');
 				$editorname = $formats[qa_opt('signatures_format')];
 				$handle = preg_replace('/^[^\/]+\/([^\/]+).*/',"$1",$this->request);
