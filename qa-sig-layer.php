@@ -12,7 +12,7 @@
 
 				// add user signature
 
-				if($this->template == 'user') { 
+				if($this->template == 'user' && !qa_get('tab')) { 
 					
 					$sig_form = $this->user_signature_form();
 					
