@@ -184,8 +184,6 @@
 		function a_item_content($a_item)
 		{
 			if (qa_opt('signatures_enable') && qa_opt('signatures_a_enable')) {
-				qa_error_log($this->signatures);
-				error_log($a_item['raw']['userid']);
 				if(isset($this->signatures['user'.$a_item['raw']['userid']]) && isset($a_item['content']))
 					$a_item['content'].=qa_opt('signatures_header').$this->signatures['user'.$a_item['raw']['userid']].qa_opt('signatures_footer');
 			}
