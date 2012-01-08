@@ -59,6 +59,7 @@
 					qa_opt('signatures_profile_enable',(bool)qa_post_text('signatures_profile_enable'));
 					qa_opt('signatures_length',(int)qa_post_text('signatures_length'));
 					qa_opt('signatures_format',(int)qa_post_text('signatures_format'));
+					qa_opt('signatures_html',(bool)qa_post_text('signatures_html'));
 					qa_opt('signatures_header',qa_post_text('signatures_header'));
 					qa_opt('signatures_footer',qa_post_text('signatures_footer'));
 					$ok = 'Settings Saved.';
@@ -105,6 +106,10 @@
 			);
 			
 			$fields[] = array(
+				'type' => 'blank',
+			);
+			
+			$fields[] = array(
 				'label' => 'Show signatures in public profiles',
 				'tags' => 'NAME="signatures_profile_enable"',
 				'value' => qa_opt('signatures_profile_enable'),
@@ -124,6 +129,17 @@
 				'options' => $formats,
 				'value' => @$formats[qa_opt('signatures_format')],
 			);
+
+			$fields[] = array(
+				'label' => 'Allow HTML',
+				'tags' => 'NAME="signatures_html"',
+				'value' => qa_opt('signatures_html'),
+				'type' => 'checkbox',
+			);
+			$fields[] = array(
+				'type' => 'blank',
+			);
+
 			$fields[] = array(
 				'label' => 'Signature header',
 				'type' => 'text',

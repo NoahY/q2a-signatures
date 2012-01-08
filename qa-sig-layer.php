@@ -172,9 +172,10 @@
 						$this->signatures['user'.$user['userid']] = $signature;
 					}
 				}
+				
 				if(@$this->signatures['user'.$q_view['raw']['userid']]) {
 					if(!isset($q_view['content'])) $q_view['content'] = '';
-					$q_view['content'].=qa_opt('signatures_header').$this->signatures['user'.$q_view['raw']['userid']].qa_opt('signatures_footer');
+					$q_view['content'].=$this->signature_output($q_view['raw']['userid']);
 				}
 			}
 			
@@ -185,7 +186,7 @@
 		{
 			if (qa_opt('signatures_enable') && qa_opt('signatures_a_enable')) {
 				if(isset($this->signatures['user'.$a_item['raw']['userid']]) && isset($a_item['content']))
-					$a_item['content'].=qa_opt('signatures_header').$this->signatures['user'.$a_item['raw']['userid']].qa_opt('signatures_footer');
+					$a_item['content'].=$this->signature_output($a_item['raw']['userid']);
 			}
 			qa_html_theme_base::a_item_content($a_item);
 
@@ -194,12 +195,20 @@
 		{
 			if (qa_opt('signatures_enable') && qa_opt('signatures_c_enable')) {
 				if(isset($this->signatures['user'.$c_item['raw']['userid']]) && isset($c_item['content'])) 
-					$c_item['content'].=qa_opt('signatures_header').$this->signatures['user'.$c_item['raw']['userid']].qa_opt('signatures_footer');
+					$c_item['content'].=$this->signature_output($c_item['raw']['userid']);
 			}
 			qa_html_theme_base::c_item_content($c_item);
 		}
 		
 	// worker functions
+
+		function signature_output($uid) {
+			if(qa_opt('signatures_html')) 
+				$sig = $this->signatures['user'.$uid];
+			else
+				$sig = strip_tags($this->signatures['user'.$uid]);
+			return qa_opt('signatures_header').$sig.qa_opt('signatures_footer');
+		}
 
 		function user_signature_form() {
 			// displays signature form in user profile
