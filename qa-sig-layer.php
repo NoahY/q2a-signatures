@@ -12,7 +12,7 @@
 
 				// add user signature
 
-				if($this->template == 'user' && !qa_get('tab')) { 
+				if($this->template == 'user' && isset($this->content['form_activity']) && !qa_get('tab')) { 
 					
 					$sig_form = $this->user_signature_form();
 					
@@ -78,7 +78,7 @@
 				
 				// insert our form
 					
-					if($this->content['q_list']) {  // paranoia
+					if(isset($this->content['q_list'])) {
 						// array splicing kungfu thanks to Stack Exchange
 						
 						// This adds form-signature before q_list
@@ -96,7 +96,7 @@
 
 						$this->content = array_merge(array_combine($keys, $vals), array_combine($keys2, $vals2));
 					}
-					else $this->content['form-signature'] = $sig_form;  // this shouldn't happen
+					else $this->content['form-signature'] = $sig_form;
 
 				}
 			}
@@ -207,6 +207,9 @@
 				$sig = $this->signatures['user'.$uid];
 			else
 				$sig = strip_tags($this->signatures['user'.$uid]);
+			
+			$sig = preg_replace('/nofollow/','',$sig);
+				
 			return qa_opt('signatures_header').$sig.qa_opt('signatures_footer');
 		}
 
