@@ -148,7 +148,7 @@
 		function q_view_content($q_view)
 		{
 			$this->signatures = array();
-			if (qa_opt('signatures_enable') && qa_opt('signatures_q_enable')) {
+			if (qa_opt('signatures_enable')) {
 				$result = qa_db_read_all_assoc(
 					qa_db_query_sub(
 						'SELECT BINARY signature AS signature, userid,format FROM ^usersignatures'
@@ -173,7 +173,7 @@
 					}
 				}
 				
-				if(@$this->signatures['user'.$q_view['raw']['userid']]) {
+				if(qa_opt('signatures_q_enable') && @$this->signatures['user'.$q_view['raw']['userid']]) {
 					if(!isset($q_view['content'])) $q_view['content'] = '';
 					$q_view['content'].=$this->signature_output($q_view['raw']['userid']);
 				}
