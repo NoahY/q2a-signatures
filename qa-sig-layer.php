@@ -9,73 +9,48 @@
 		function doctype()
 		{
 			if (qa_opt('signatures_enable')) {
+				if($this->request == 'admin/permissions') {
+
+					$permits[] = 'signature_allow';
+					$permits[] = 'signature_edit_allow';			
+					foreach($permits as $optionname) {
+						$value = qa_opt($optionname);
+						$optionfield=array(
+							'id' => $optionname,
+							'label' => qa_lang_html('signature_plugin/'.$optionname).':',
+							'tags' => 'NAME="option_'.$optionname.'" ID="option_'.$optionname.'"',
+							'value' => $value,
+							'error' => qa_html(@$errors[$optionname]),
+						);					
+						$widest=QA_PERMIT_USERS;
+						$narrowest=QA_PERMIT_ADMINS;
+						
+						$permitoptions=qa_admin_permit_options($widest, $narrowest, (!QA_FINAL_EXTERNAL_USERS) && qa_opt('confirm_user_emails'));
+						
+						if (count($permitoptions)>1)
+							qa_optionfield_make_select($optionfield, $permitoptions, $value,
+								($value==QA_PERMIT_CONFIRMED) ? QA_PERMIT_USERS : min(array_keys($permitoptions)));
+						$this->content['form']['fields'][$optionname]=$optionfield;
+
+						$this->content['form']['fields'][$optionname.'_points']= array(
+							'id' => $optionname.'_points',
+							'tags' => 'NAME="option_'.$optionname.'_points" ID="option_'.$optionname.'_points"',
+							'type'=>'number',
+							'value'=>qa_opt($optionname.'_points'),
+							'prefix'=>qa_lang_html('admin/users_must_have').'&nbsp;',
+							'note'=>qa_lang_html('admin/points')
+						);
+						$checkboxtodisplay[$optionname.'_points']='(option_'.$optionname.'=='.qa_js(QA_PERMIT_POINTS).') ||(option_'.$optionname.'=='.qa_js(QA_PERMIT_POINTS_CONFIRMED).')';
+					}
+					qa_set_display_rules($this->content, $checkboxtodisplay);
+				}
 
 				// add user signature
 
 				if($this->template == 'user' && isset($this->content['form_activity']) && !qa_get('tab')) { 
 					
-					$sig_form = $this->user_signature_form();
+					$sig_form = $this->content['user_signature_form']; // from overrides
 					
-					// readd scripts for forms...
-					
-					$script=array('<SCRIPT TYPE="text/javascript"><!--');
-					
-					global $qa_root_url_relative;
-					$qa_content = $this->content;
-					
-					if (isset($qa_content['script_var']))
-						foreach ($qa_content['script_var'] as $var => $value)
-							$script[]='var '.$var.'='.qa_js($value).';';
-							
-					if (isset($qa_content['script_lines']))
-						foreach ($qa_content['script_lines'] as $scriptlines) {
-							$script[]='';
-							$script=array_merge($script, $scriptlines);
-						}
-						
-					if (isset($qa_content['focusid']))
-						$qa_content['script_onloads'][]=array(
-							"var elem=document.getElementById(".qa_js($qa_content['focusid']).");",
-							"if (elem) {",
-							"\telem.select();",
-							"\telem.focus();",
-							"}",
-						);
-						
-					if (isset($qa_content['script_onloads'])) {
-						array_push($script,
-							'',
-							'var qa_oldonload=window.onload;',
-							'window.onload=function() {',
-							"\tif (typeof qa_oldonload=='function')",
-							"\t\tqa_oldonload();"
-						);
-						
-						foreach ($qa_content['script_onloads'] as $scriptonload) {
-							$script[]="\t";
-							
-							foreach ((array)$scriptonload as $scriptline)
-								$script[]="\t".$scriptline;
-						}
-				
-						$script[]='}';
-					}
-					
-					$script[]='//--></SCRIPT>';
-					
-					if (isset($qa_content['script_rel'])) {
-						$uniquerel=array_unique($qa_content['script_rel']); // remove any duplicates
-						foreach ($uniquerel as $script_rel)
-							$script[]='<SCRIPT SRC="'.qa_html($qa_root_url_relative.$script_rel).'" TYPE="text/javascript"></SCRIPT>';
-					}
-					
-					if (isset($qa_content['script_src']))
-						foreach ($qa_content['script_src'] as $script_src)
-							$script[]='<SCRIPT SRC="'.qa_html($script_src).'" TYPE="text/javascript"></SCRIPT>';
-				
-					$this->content['script']=array_merge($this->content['script'],$script);
-
-				
 				// insert our form
 					
 					if(isset($this->content['q_list'])) {
@@ -213,120 +188,6 @@
 			return qa_opt('signatures_header').$sig.qa_opt('signatures_footer');
 		}
 
-		function user_signature_form() {
-			// displays signature form in user profile
-			
-			global $qa_request;
-			
-			$handle = preg_replace('/^[^\/]+\/([^\/]+).*/',"$1",$qa_request);
-			
-			$userid = $this->getuserfromhandle($handle);
-			
-			if(!$userid) return;
-
-			if(qa_get_logged_in_handle() == $handle) {
-
-				$ok = null;
-				
-				$formats = qa_list_modules('editor');
-				
-				$editorname = $formats[qa_opt('signatures_format')];
-				$editor=qa_load_module('editor', $editorname);
-				
-				if (qa_clicked('signature_save')) {
-					if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {
-						$error = 'Max possible signature length is 1000 characters';
-					}
-					else {
-						
-						$readdata=$editor->read_post('signature_text');
-						$informat=$readdata['format'];	
-						
-						$incontent = qa_post_text('signature_text');
-						
-						qa_db_query_sub(
-							'INSERT INTO ^usersignatures (userid,signature,format) VALUES (#,$,$) ON DUPLICATE KEY UPDATE signature=$,format=$',
-							$userid,$incontent,$informat,$incontent,$informat
-						);
-						$ok = 'Signature Saved.';
-					}
-				}
-				$content = qa_db_read_one_assoc(
-					qa_db_query_sub(
-						'SELECT BINARY signature AS signature,format FROM ^usersignatures WHERE userid=#',
-						$userid
-					),
-					true
-				);
-				
-				$fields['content'] = $editor->get_field($this->content, $content['signature'], $content['format'], 'signature_text', 12, true);
-
-				if((!$editorname || $editorname == 'Markdown Editor')) $fields['elCount'] = array(
-					'label' => '<div id="elCount">'.qa_opt('signatures_length').'</div>',
-					'type' => 'static',
-				);
-
-				$form=array(
-				
-					'ok' => ($ok && !isset($error)) ? $ok : null,
-					
-					'style' => 'tall',
-					
-					'title' => '<a name="signature_text"></a>Signature',
-
-					'tags' =>  'action="'.qa_self_html().'#signature_text" method="POST"',
-					
-					'fields' => $fields,
-					
-					'buttons' => array(
-						array(
-							'label' => qa_lang_html('main/save_button'),
-							'tags' => 'NAME="signature_save"',
-						),
-					),
-					
-					'hidden' => array(
-						'editor' => qa_html($editorname),
-						'dosavesig' => '1',
-					),
-				);
-				return $form;
-			}
-			else if(qa_opt('signatures_profile_enable')) {
-				$content = qa_db_read_one_assoc(
-					qa_db_query_sub(
-						'SELECT BINARY signature as signature, format FROM ^usersignatures WHERE userid=#',
-						$userid
-					),
-					true
-				);
-
-				if(!$content) return;
-
-				$informat=$content['format'];					
-				$viewer=qa_load_viewer($content['signature'], $informat);
-				
-				global $options;
-				
-				$signature=qa_viewer_html($content['signature'], $informat, array(
-					'blockwordspreg' => @$options['blockwordspreg'],
-					'showurllinks' => @$options['showurllinks'],
-					'linksnewwindow' => @$options['linksnewwindow'],
-				));
-
-				$fields[] = array(
-						'label' => qa_opt('signatures_header').$signature.qa_opt('signatures_footer'),
-						'type' => 'static',
-				);
-
-				return array(
-					'title' => 'Signature',
-					'fields' => $fields,
-					'style' => 'tall'
-				);
-			}				
-			
-		}
 		function getuserfromhandle($handle) {
 			require_once QA_INCLUDE_DIR.'qa-app-users.php';
 			

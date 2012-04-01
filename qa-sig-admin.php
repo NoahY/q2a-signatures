@@ -14,6 +14,10 @@
 					return '</div>';
 				case 'signatures_format':
 					return 0;
+				case 'signature_allow':
+					return QA_PERMIT_USER;
+				case 'signature_edit_allow':
+					return QA_PERMIT_ADMIN;
 				default:
 					return null;				
 			}
