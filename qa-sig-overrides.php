@@ -31,8 +31,11 @@
 				$formats = qa_list_modules('editor');
 				$format = qa_opt('signatures_format');
 				$editorname = $formats[$format];
-				$editor=qa_load_editor('', $format, $editorname);
-
+				if(!strlen($editorname)) 
+					$editorname = qa_lang_html('admin/basic_editor');
+				
+				$editor=qa_load_editor('', '', $editorname);
+				
 				if (qa_clicked('signature_save')) {
 					if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {
 						$error = 'Max possible signature length is 1000 characters';

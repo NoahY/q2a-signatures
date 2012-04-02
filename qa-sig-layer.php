@@ -208,7 +208,5 @@
 			if (!isset($userid)) return;
 			return $userid;
 		}
-				
-		
 	}
 
