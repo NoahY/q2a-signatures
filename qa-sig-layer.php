@@ -9,7 +9,7 @@
 		function doctype()
 		{
 			if (qa_opt('signatures_enable')) {
-				if($this->request == 'admin/permissions') {
+				if($this->request == 'admin/permissions' && qa_get_logged_in_level()>=QA_USER_LEVEL_ADMIN) {
 
 					$permits[] = 'signature_allow';
 					$permits[] = 'signature_edit_allow';			
