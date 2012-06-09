@@ -16,6 +16,17 @@
 		$reqs = explode('/',$qa_request);
 		
 		if($reqs[0] == 'user') {
+			
+			// permissions
+			
+			if(isset($qa_content['form_profile']['fields']['permits'])) {
+				$ov = $qa_content['form_profile']['fields']['permits']['value'];
+				$ov = str_replace('[profile/signature_allow]',qa_lang('signature_plugin/signature_allow'),$ov);
+				$ov = str_replace('[profile/signature_edit_allow]',qa_lang('signature_plugin/signature_edit_allow'),$ov);
+				$qa_content['form_profile']['fields']['permits']['value'] = $ov;
+			}
+
+
 			$qa_content['user_signature_form'] = array();
 			
 			$userid = $qa_content['raw']['userid'];
@@ -35,6 +46,16 @@
 					$editorname = qa_lang_html('admin/basic_editor');
 				
 				$editor=qa_load_editor('', '', $editorname);
+				qa_db_query_sub(
+					'CREATE TABLE IF NOT EXISTS ^usersignatures ('.
+						'userid INT(11) NOT NULL,'.
+						'signature VARCHAR (1000) DEFAULT \'\','.
+						'format VARCHAR (20) DEFAULT \'\','.
+						'id INT(11) NOT NULL AUTO_INCREMENT,'.
+						'UNIQUE (userid),'.
+						'PRIMARY KEY (id)'.
+					') ENGINE=MyISAM DEFAULT CHARSET=utf8'
+				);			
 				
 				if (qa_clicked('signature_save')) {
 					if(strlen(qa_post_text('signature_text')) > qa_opt('signatures_length')) {

@@ -42,10 +42,8 @@
 				}
 				else {
 					if(!qa_opt('signatures_enable') && qa_post_text('signatures_enable')) {
-						$table_exists = qa_db_read_one_value(qa_db_query_sub("SHOW TABLES LIKE '^usersignatures'"),true);
-						if(!$table_exists) {
-							qa_db_query_sub(
-							'CREATE TABLE ^usersignatures ('.
+						qa_db_query_sub(
+							'CREATE TABLE IF NOT EXISTS ^usersignatures ('.
 								'userid INT(11) NOT NULL,'.
 								'signature VARCHAR (1000) DEFAULT \'\','.
 								'format VARCHAR (20) DEFAULT \'\','.
@@ -54,7 +52,6 @@
 								'PRIMARY KEY (id)'.
 							') ENGINE=MyISAM DEFAULT CHARSET=utf8'
 							);			
-						}
 					}
 					qa_opt('signatures_enable',(bool)qa_post_text('signatures_enable'));
 					qa_opt('signatures_q_enable',(bool)qa_post_text('signatures_q_enable'));

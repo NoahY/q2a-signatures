@@ -8,42 +8,42 @@
 	
 		function doctype()
 		{
-			if (qa_opt('signatures_enable')) {
-				if($this->request == 'admin/permissions' && qa_get_logged_in_level()>=QA_USER_LEVEL_ADMIN) {
+			if($this->request == 'admin/permissions' && qa_get_logged_in_level()>=QA_USER_LEVEL_ADMIN) {
 
-					$permits[] = 'signature_allow';
-					$permits[] = 'signature_edit_allow';			
-					foreach($permits as $optionname) {
-						$value = qa_opt($optionname);
-						$optionfield=array(
-							'id' => $optionname,
-							'label' => qa_lang_html('signature_plugin/'.$optionname).':',
-							'tags' => 'NAME="option_'.$optionname.'" ID="option_'.$optionname.'"',
-							'value' => $value,
-							'error' => qa_html(@$errors[$optionname]),
-						);					
-						$widest=QA_PERMIT_USERS;
-						$narrowest=QA_PERMIT_ADMINS;
-						
-						$permitoptions=qa_admin_permit_options($widest, $narrowest, (!QA_FINAL_EXTERNAL_USERS) && qa_opt('confirm_user_emails'));
-						
-						if (count($permitoptions)>1)
-							qa_optionfield_make_select($optionfield, $permitoptions, $value,
-								($value==QA_PERMIT_CONFIRMED) ? QA_PERMIT_USERS : min(array_keys($permitoptions)));
-						$this->content['form']['fields'][$optionname]=$optionfield;
+				$permits[] = 'signature_allow';
+				$permits[] = 'signature_edit_allow';			
+				foreach($permits as $optionname) {
+					$value = qa_opt($optionname);
+					$optionfield=array(
+						'id' => $optionname,
+						'label' => qa_lang_html('signature_plugin/'.$optionname).':',
+						'tags' => 'NAME="option_'.$optionname.'" ID="option_'.$optionname.'"',
+						'value' => $value,
+						'error' => qa_html(@$errors[$optionname]),
+					);					
+					$widest=QA_PERMIT_USERS;
+					$narrowest=QA_PERMIT_ADMINS;
+					
+					$permitoptions=qa_admin_permit_options($widest, $narrowest, (!QA_FINAL_EXTERNAL_USERS) && qa_opt('confirm_user_emails'));
+					
+					if (count($permitoptions)>1)
+						qa_optionfield_make_select($optionfield, $permitoptions, $value,
+							($value==QA_PERMIT_CONFIRMED) ? QA_PERMIT_USERS : min(array_keys($permitoptions)));
+					$this->content['form']['fields'][$optionname]=$optionfield;
 
-						$this->content['form']['fields'][$optionname.'_points']= array(
-							'id' => $optionname.'_points',
-							'tags' => 'NAME="option_'.$optionname.'_points" ID="option_'.$optionname.'_points"',
-							'type'=>'number',
-							'value'=>qa_opt($optionname.'_points'),
-							'prefix'=>qa_lang_html('admin/users_must_have').'&nbsp;',
-							'note'=>qa_lang_html('admin/points')
-						);
-						$checkboxtodisplay[$optionname.'_points']='(option_'.$optionname.'=='.qa_js(QA_PERMIT_POINTS).') ||(option_'.$optionname.'=='.qa_js(QA_PERMIT_POINTS_CONFIRMED).')';
-					}
-					qa_set_display_rules($this->content, $checkboxtodisplay);
+					$this->content['form']['fields'][$optionname.'_points']= array(
+						'id' => $optionname.'_points',
+						'tags' => 'NAME="option_'.$optionname.'_points" ID="option_'.$optionname.'_points"',
+						'type'=>'number',
+						'value'=>qa_opt($optionname.'_points'),
+						'prefix'=>qa_lang_html('admin/users_must_have').'&nbsp;',
+						'note'=>qa_lang_html('admin/points')
+					);
+					$checkboxtodisplay[$optionname.'_points']='(option_'.$optionname.'=='.qa_js(QA_PERMIT_POINTS).') ||(option_'.$optionname.'=='.qa_js(QA_PERMIT_POINTS_CONFIRMED).')';
 				}
+				qa_set_display_rules($this->content, $checkboxtodisplay);
+			}
+			if (qa_opt('signatures_enable')) {
 
 				// add user signature
 
@@ -124,6 +124,17 @@
 		{
 			$this->signatures = array();
 			if (qa_opt('signatures_enable')) {
+				qa_db_query_sub(
+					'CREATE TABLE IF NOT EXISTS ^usersignatures ('.
+						'userid INT(11) NOT NULL,'.
+						'signature VARCHAR (1000) DEFAULT \'\','.
+						'format VARCHAR (20) DEFAULT \'\','.
+						'id INT(11) NOT NULL AUTO_INCREMENT,'.
+						'UNIQUE (userid),'.
+						'PRIMARY KEY (id)'.
+					') ENGINE=MyISAM DEFAULT CHARSET=utf8'
+				);			
+
 				$result = qa_db_read_all_assoc(
 					qa_db_query_sub(
 						'SELECT BINARY signature AS signature, userid,format FROM ^usersignatures'
