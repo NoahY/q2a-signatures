@@ -144,7 +144,9 @@
 				foreach($result as $user) {
 					if ($user['signature']) {
 						
-						$informat=$user['format'];					
+						$informat=$user['format'];
+						if(!$informat && qa_opt('signatures_html'))
+							$informat = 'html';
 						
 						$viewer=qa_load_viewer($user['signature'], $informat);
 						
@@ -155,6 +157,7 @@
 							'showurllinks' => @$options['showurllinks'],
 							'linksnewwindow' => @$options['linksnewwindow'],
 						));
+						error_log($signature);
 						$this->signatures['user'.$user['userid']] = $signature;
 					}
 				}
