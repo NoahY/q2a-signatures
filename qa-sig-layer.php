@@ -157,7 +157,6 @@
 							'showurllinks' => @$options['showurllinks'],
 							'linksnewwindow' => @$options['linksnewwindow'],
 						));
-						error_log($signature);
 						$this->signatures['user'.$user['userid']] = $signature;
 					}
 				}
