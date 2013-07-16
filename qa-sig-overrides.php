@@ -29,7 +29,7 @@
 
 			$qa_content['user_signature_form'] = array();
 			
-			$userid = $qa_content['raw']['userid'];
+			$userid = @$qa_content['raw']['userid'];
 			if(!$userid) return $qa_content;
 			
 			$handles = qa_userids_to_handles(array($userid));

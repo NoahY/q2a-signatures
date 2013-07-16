@@ -4,7 +4,7 @@
         Plugin Name: Signatures
         Plugin URI: https://github.com/NoahY/q2a-signatures
         Plugin Description: Signatures
-        Plugin Version: 3.3
+        Plugin Version: 3.4
         Plugin Date: 2011-08-16
         Plugin Author: NoahY
         Plugin Author URI:                              
